@@ -10,6 +10,20 @@
     - openjdk
     - openjdk-install
 
+# See: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=863199
+- name: ensure man directory
+  file:
+    path: /usr/share/man/man1
+    state: directory
+    recurse: true
+  when:
+    - ansible_distribution == 'Ubuntu'
+    - ansible_distribution_major_version is version('18', '>=')
+  tags:
+    - configuration
+    - openjdk
+    - openjdk-install
+
 - name: install (default)
   apt:
     name: "{{ item.version }}-jdk"
@@ -38,9 +52,6 @@
   shell: >
     update-java-alternatives -l | grep "java-.*{{ item.version }}.*-openjdk-$(dpkg --print-architecture)" | awk '{print $1}'
   with_items: "{{ openjdk_versions }}"
-  when:
-    - item.version != 'default'
-    - item.set_as_default | default(false) | bool
   register: _get_alternatives
   changed_when: false
   tags:
@@ -49,17 +60,6 @@
     - openjdk-install
     - openjdk-install-alternatives
     - openjdk-install-alternatives-get
-
-- name: set alternatives
-  debug:
-    msg: "{{ _get_alternatives }}"
-  changed_when: false
-  tags:
-    - configuration
-    - openjdk
-    - openjdk-install
-    - openjdk-install-alternatives
-    - openjdk-install-alternatives-debug
 
 - name: set alternatives
   command: >
