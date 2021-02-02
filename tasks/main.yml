@@ -14,7 +14,7 @@
   apt:
     name: "{{ item.version }}-jdk"
     state: "{{ apt_install_state | default('latest') }}"
-    dpkg_options: "{{ item.dpkg_options | default(openjdk_dpkg_options) | join(',') }}"
+    dpkg_options: "{{ item.dpkg_options | default([]) | join(',') | default(omit, true) }}"
   with_items: "{{ openjdk_versions }}"
   when: item.version == 'default'
   tags:
@@ -26,7 +26,7 @@
   apt:
     name: "openjdk-{{ item.version }}-jdk"
     state: "{{ apt_install_state | default('latest') }}"
-    dpkg_options: "{{ item.dpkg_options | default(openjdk_dpkg_options) | join(',') }}"
+    dpkg_options: "{{ item.dpkg_options | default([]) | join(',') | default(omit, true) }}"
   with_items: "{{ openjdk_versions }}"
   when: item.version != 'default'
   tags:
