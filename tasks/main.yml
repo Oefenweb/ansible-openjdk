@@ -34,6 +34,48 @@
     - openjdk
     - openjdk-install
 
+- name: get alternatives
+  shell: >
+    update-java-alternatives -l | grep "java-.*{{ item.version }}.*-openjdk-$(dpkg --print-architecture)" | awk '{print $1}'
+  with_items: "{{ openjdk_versions }}"
+  when:
+    - item.version != 'default'
+    - item.set_as_default | default(false) | bool
+  register: _get_alternatives
+  changed_when: false
+  tags:
+    - configuration
+    - openjdk
+    - openjdk-install
+    - openjdk-install-alternatives
+    - openjdk-install-alternatives-get
+
+- name: set alternatives
+  debug:
+    msg: "{{ _get_alternatives }}"
+  changed_when: false
+  tags:
+    - configuration
+    - openjdk
+    - openjdk-install
+    - openjdk-install-alternatives
+    - openjdk-install-alternatives-debug
+
+- name: set alternatives
+  command: >
+    update-java-alternatives -s {{ item.stdout }}
+  with_items: "{{ _get_alternatives.results | default([]) }}"
+  when:
+    - item.item.version != 'default'
+    - item.item.set_as_default | default(false) | bool
+  changed_when: false
+  tags:
+    - configuration
+    - openjdk
+    - openjdk-install
+    - openjdk-install-alternatives
+    - openjdk-install-alternatives-set
+
 - name: verify
   command: >
     java -version
