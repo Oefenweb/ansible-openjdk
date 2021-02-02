@@ -5,3 +5,7 @@
 # https://bugs.launchpad.net/ubuntu/+source/openjdk-9/+bug/1593191
 openjdk_dpkg_options_1593191:
   - force-overwrite
+
+openjdk_dpkg_options:
+  - force-confdef
+  - force-confold
