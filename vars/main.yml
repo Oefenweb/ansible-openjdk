@@ -1,0 +1,7 @@
+# vars file for openjdk
+---
+# see:
+# https://askubuntu.com/questions/769467/can-not-install-openjdk-9-jdk-because-it-tries-to-overwrite-file-aready-includ
+# https://bugs.launchpad.net/ubuntu/+source/openjdk-9/+bug/1593191
+openjdk_dpkg_options_1593191:
+  - force-overwrite

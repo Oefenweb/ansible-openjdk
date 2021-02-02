@@ -1,0 +1,5 @@
+# defaults file for openjdk
+---
+openjdk_versions:
+  - version: default
+    set_as_default: true

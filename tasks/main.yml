@@ -1,0 +1,47 @@
+# tasks file for openjdk
+---
+- name: update cache
+  apt:
+    update_cache: true
+    cache_valid_time: "{{ apt_update_cache_valid_time | default(3600) }}"
+  when: openjdk_versions | length
+  tags:
+    - configuration
+    - openjdk
+    - openjdk-install
+
+- name: install (default)
+  apt:
+    name: "{{ item.version }}-jdk"
+    state: "{{ apt_install_state | default('latest') }}"
+    dpkg_options: "{{ item.dpkg_options | default([]) | join(',') }}"
+  with_items: "{{ openjdk_versions }}"
+  when: item.version == 'default'
+  tags:
+    - configuration
+    - openjdk
+    - openjdk-install
+
+- name: install (specific)
+  apt:
+    name: "openjdk-{{ item.version }}-jdk"
+    state: "{{ apt_install_state | default('latest') }}"
+    dpkg_options: "{{ item.dpkg_options | default([]) | join(',') }}"
+  with_items: "{{ openjdk_versions }}"
+  when: item.version != 'default'
+  tags:
+    - configuration
+    - openjdk
+    - openjdk-install
+
+- name: verify
+  command: >
+    java -version
+  when: openjdk_versions | length
+  register: _verify_version
+  changed_when: false
+  tags:
+    - configuration
+    - openjdk
+    - openjdk-install
+    - openjdk-install-verify
