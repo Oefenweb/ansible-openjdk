@@ -1,0 +1,89 @@
+# tasks file for openjdk
+---
+- name: update cache
+  apt:
+    update_cache: true
+    cache_valid_time: "{{ apt_update_cache_valid_time | default(3600) }}"
+  when: openjdk_versions | length
+  tags:
+    - configuration
+    - openjdk
+    - openjdk-install
+
+# See: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=863199
+- name: ensure man directory
+  file:
+    path: /usr/share/man/man1
+    state: directory
+    recurse: true
+  when:
+    - ansible_distribution == 'Ubuntu'
+    - ansible_distribution_major_version is version('18', '>=')
+  tags:
+    - configuration
+    - openjdk
+    - openjdk-install
+
+- name: install (default)
+  apt:
+    name: "{{ item.version }}-jdk"
+    state: "{{ apt_install_state | default('latest') }}"
+    dpkg_options: "{{ item.dpkg_options | default([]) | join(',') | default(omit, true) }}"
+  with_items: "{{ openjdk_versions }}"
+  when: item.version == 'default'
+  tags:
+    - configuration
+    - openjdk
+    - openjdk-install
+
+- name: install (specific)
+  apt:
+    name: "openjdk-{{ item.version }}-jdk"
+    state: "{{ apt_install_state | default('latest') }}"
+    dpkg_options: "{{ item.dpkg_options | default([]) | join(',') | default(omit, true) }}"
+  with_items: "{{ openjdk_versions }}"
+  when: item.version != 'default'
+  tags:
+    - configuration
+    - openjdk
+    - openjdk-install
+
+- name: get alternatives
+  shell: >
+    update-java-alternatives -l | grep "java-.*{{ item.version }}.*-openjdk-$(dpkg --print-architecture)" | awk '{print $1}'
+  with_items: "{{ openjdk_versions }}"
+  register: _get_alternatives
+  changed_when: false
+  tags:
+    - configuration
+    - openjdk
+    - openjdk-install
+    - openjdk-install-alternatives
+    - openjdk-install-alternatives-get
+
+- name: set alternatives
+  command: >
+    update-java-alternatives -s {{ item.stdout }}
+  with_items: "{{ _get_alternatives.results | default([]) }}"
+  when:
+    - item.item.version != 'default'
+    - item.item.set_as_default | default(false) | bool
+  changed_when: false
+  tags:
+    - configuration
+    - openjdk
+    - openjdk-install
+    - openjdk-install-alternatives
+    - openjdk-install-alternatives-set
+
+- name: verify
+  command: >
+    java -version
+  when: openjdk_versions | length
+  register: _verify_version
+  changed_when: false
+  tags:
+    - configuration
+    - openjdk
+    - openjdk-install
+    - openjdk-install-verify
