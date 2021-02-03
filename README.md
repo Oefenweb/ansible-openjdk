@@ -13,7 +13,7 @@ None
 
 * `openjdk_versions`: [default: `[{version: 'default', set_as_default: true}]`]: Oracle java version(s) to install
 * `openjdk_versions.{n}.version`: [required]: Version to install (`8`, `9`, `default`)
-* `openjdk_versions.{n}.set_as_default`: [default: `false`]: Whether or not to set as default
+* `openjdk_versions.{n}.set_as_default`: [default: `false`]: Whether or not to set as default (does not work for `version` `default`)
 
 #### Dependencies
 
