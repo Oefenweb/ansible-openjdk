@@ -1,4 +1,4 @@
-# test file for openjdk
+# test file
 ---
 - hosts: localhost
   connection: local

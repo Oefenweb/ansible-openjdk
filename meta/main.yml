@@ -1,6 +1,7 @@
-# meta file for openjdk
+# meta file
 ---
 galaxy_info:
+  namespace: oefenweb
   role_name: openjdk
   author: Mischa ter Smitten
   company: Oefenweb.nl B.V.
