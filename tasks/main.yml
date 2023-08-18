@@ -1,7 +1,7 @@
 # tasks file
 ---
 - name: update cache
-  apt:
+  ansible.builtin.apt:
     update_cache: true
     cache_valid_time: "{{ apt_update_cache_valid_time | default(3600) }}"
   when: openjdk_versions | length
@@ -12,7 +12,7 @@
 
 # See: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=863199
 - name: ensure man directory
-  file:
+  ansible.builtin.file:
     path: /usr/share/man/man1
     state: directory
     recurse: true
@@ -25,7 +25,7 @@
     - openjdk-install
 
 - name: install (default)
-  apt:
+  ansible.builtin.apt:
     name: "{{ item.version }}-jdk"
     state: "{{ apt_install_state | default('latest') }}"
     dpkg_options: "{{ item.dpkg_options | default([]) | join(',') | default(omit, true) }}"
@@ -37,7 +37,7 @@
     - openjdk-install
 
 - name: install (specific)
-  apt:
+  ansible.builtin.apt:
     name: "openjdk-{{ item.version }}-jdk"
     state: "{{ apt_install_state | default('latest') }}"
     dpkg_options: "{{ item.dpkg_options | default([]) | join(',') | default(omit, true) }}"
@@ -48,8 +48,8 @@
     - openjdk
     - openjdk-install
 
-- name: get alternatives
-  shell: >
+- name: get alternatives  # noqa risky-shell-pipe
+  ansible.builtin.shell: >
     update-java-alternatives -l | grep "java-.*{{ item.version }}.*-openjdk-$(dpkg --print-architecture)" | awk '{print $1}'
   with_items: "{{ openjdk_versions }}"
   register: _get_alternatives
@@ -62,7 +62,7 @@
     - openjdk-install-alternatives-get
 
 - name: set alternatives
-  command: >
+  ansible.builtin.command: >
     update-java-alternatives -s {{ item.stdout }}
   with_items: "{{ _get_alternatives.results | default([]) }}"
   when:
@@ -77,7 +77,7 @@
     - openjdk-install-alternatives-set
 
 - name: verify
-  command: >
+  ansible.builtin.command: >
     java -version
   when: openjdk_versions | length
   register: _verify_version
