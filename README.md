@@ -27,7 +27,7 @@ None
 ---
 - hosts: all
   roles:
-    - openjdk
+    - oefenweb.openjdk
 ```
 
 ##### Advanced
@@ -36,7 +36,7 @@ None
 ---
 - hosts: all
   roles:
-    - openjdk
+    - oefenweb.openjdk
   vars:
     openjdk_versions:
       - version: 8
