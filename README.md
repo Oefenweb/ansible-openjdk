@@ -11,9 +11,9 @@ None
 
 #### Variables
 
-* `openjdk_versions`: [default: `[{version: 'default', set_as_default: true}]`]: Oracle java version(s) to install
-* `openjdk_versions.{n}.version`: [required]: Version to install (`8`, `9`, `default`)
-* `openjdk_versions.{n}.set_as_default`: [default: `false`]: Whether or not to set as default (does not work for `version` `default`)
+* `openjdk_versions`: [default: `[{version: 'default', set_as_default: true}]`]: Java version(s) to install
+* `openjdk_versions.{n}.version`: [required]: Version to install (`11`, `17`, `default`)
+* `openjdk_versions.{n}.set_as_default`: [default: `false`]: Whether to set as default (does not work for `version` `default`)
 
 #### Dependencies
 
@@ -39,8 +39,8 @@ None
     - oefenweb.openjdk
   vars:
     openjdk_versions:
-      - version: 8
-      - version: 9
+      - version: 11
+      - version: 17
         set_as_default: true
 ```
 
