@@ -4,7 +4,7 @@
   ansible.builtin.apt:
     update_cache: true
     cache_valid_time: "{{ apt_update_cache_valid_time | default(3600) }}"
-  when: openjdk_versions | length
+  when: openjdk_versions | length > 0
   tags:
     - configuration
     - openjdk
@@ -17,8 +17,8 @@
     state: directory
     recurse: true
   when:
-    - ansible_distribution == 'Ubuntu'
-    - ansible_distribution_major_version is version('18', '>=')
+    - ansible_facts['distribution'] == 'Ubuntu'
+    - ansible_facts['distribution_major_version'] is version('18', '>=')
   tags:
     - configuration
     - openjdk
@@ -79,7 +79,7 @@
 - name: verify
   ansible.builtin.command: >
     java -version
-  when: openjdk_versions | length
+  when: openjdk_versions | length > 0
   register: _verify_version
   changed_when: false
   tags:
